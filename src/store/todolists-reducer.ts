@@ -39,7 +39,7 @@ export const ChangeTodolistFilterAC = (todoListID: string, nextFilter: FilterVal
     return {type: 'CHANGE-TODOLIST-FILTER', todoListID: todoListID, nextFilter: nextFilter}
 }
 
-export const todolistsReducer = (todolists: Array<TodoListsType>, action: ActionType) => {
+export const todolistsReducer = (todolists: Array<TodoListsType>, action: ActionType):Array<TodoListsType> => {
     switch (action.type) {
         case 'REMOVE-TODOLIST':
             return todolists.filter(tl => tl.id !== action.todoListID)
