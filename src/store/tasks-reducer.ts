@@ -44,7 +44,9 @@ export const ChangeTaskStatusAC = (taskID: string, isDone: boolean, todoListID: 
     return {type: 'CHANGE-TASK-STATUS', taskID: taskID, todoListID: todoListID,  status: isDone}
 }
 
-export const tasksReducer = (tasks: TaskStateType, action: ActionTaskType): TaskStateType => {
+let initialState = {}
+
+export const tasksReducer = (tasks: TaskStateType = initialState, action: ActionTaskType): TaskStateType => {
     switch (action.type) {
         case 'REMOVE-TASK':
             let copyState = {...tasks}
