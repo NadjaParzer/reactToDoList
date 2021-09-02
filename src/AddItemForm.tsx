@@ -8,7 +8,7 @@ type AddItemPropsType = {
 }
 
 export const AddItemForm = React.memo((props: AddItemPropsType) => {
-    console.log('Add item form')
+    console.log('Additemform is called')
     const [title, setTitle] = useState<string>("")
     const [error, setError] = useState<boolean>(false)
 
@@ -17,7 +17,11 @@ export const AddItemForm = React.memo((props: AddItemPropsType) => {
         setError(false)
     }
 
-    const onKeyHandler = (e: KeyboardEvent<HTMLInputElement>) => {if (e.key === "Enter") addItem()}
+    const onKeyHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        // if (error !== null) {
+        //     setError(null)
+        // }
+        if (e.key === "Enter") addItem()}
 
     const addItem = () => {
         const trimmedTitle = title.trim()
@@ -29,11 +33,11 @@ export const AddItemForm = React.memo((props: AddItemPropsType) => {
         setTitle("")
     }
 
-   {/* const errorMessage = error
-        ? <div className={"error-text"}>Title is required!</div>
-        : null */} 
+//    const errorMessage = error
+//         ? <div className={"error-text"}>Title is required!</div>
+//         : null 
 
-        const errorMessage = "Title is required!"
+    const errorMessage = "Title is required!"
 
     return (
         <div>
