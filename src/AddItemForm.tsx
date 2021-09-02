@@ -1,12 +1,14 @@
 import { IconButton, TextField } from '@material-ui/core'
 import { AddBox } from '@material-ui/icons'
 import React, {KeyboardEvent, ChangeEvent, useState} from 'react'
+import { convertTypeAcquisitionFromJson } from 'typescript'
 
 type AddItemPropsType = {
     addItem: (title: string) => void
 }
 
-export const AddItemForm = (props: AddItemPropsType) => {
+export const AddItemForm = React.memo((props: AddItemPropsType) => {
+    console.log('Add item form')
     const [title, setTitle] = useState<string>("")
     const [error, setError] = useState<boolean>(false)
 
@@ -57,4 +59,4 @@ export const AddItemForm = (props: AddItemPropsType) => {
                 
             </div>
     )
-}
+})
