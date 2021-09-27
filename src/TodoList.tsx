@@ -1,11 +1,13 @@
 import { Button, IconButton, Checkbox } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
-import React, {useCallback} from 'react'
-
+import React, {useCallback, useEffect} from 'react'
+import { useDispatch } from 'react-redux';
 import { AddItemForm } from './AddItemForm';
-import {FilterValuesType, TodoListsType} from "./App";
+import { TaskStatuses, TaskType } from './api/todolistsAPI';
 import { EditableSpan } from './EditableSpan';
-import { Task, TaskType } from './Task';
+import { fetchTasksTC} from './store/tasks-reducer';
+import { FilterValuesType } from './store/todolists-reducer';
+import { Task} from './Task';
 
 
 type TodoListPropsType = {
@@ -14,9 +16,8 @@ type TodoListPropsType = {
     title: string
     tasks: Array<TaskType>
     addTask: (todolistsID:string ,title: string) => void
-    
     changeFilter: (todolistsID:string ,nextFilter: FilterValuesType) => void
-    changeTaskStatus:(todolistsID:string ,taskID: string, isDone: boolean) => void
+    changeTaskStatus:(todolistsID:string ,taskID: string, status: TaskStatuses) => void
     removeTodoList: (todolistsID:string) => void
     addTodoList: (title: string) => void
     removeTask: (todolistsID:string ,taskID: string) => void
@@ -29,15 +30,19 @@ export const TodoList = React.memo((props: TodoListPropsType) => {
     // const todo = useSelector<AppRootStateType, TodoListsType>(state => 
     //     state.todolists.filter(todo => todo.id === props.id)[0])
 
-    // const dispatch = useDispatch()
+     const dispatch = useDispatch()
+
+     useEffect(() => {
+         dispatch(fetchTasksTC(props.id))
+     }, [])
 
     
     let tasksForTodolist = props.tasks
     if (props.filter === 'active') {
-        tasksForTodolist = props.tasks.filter(t => t.isDone === false)
+        tasksForTodolist = props.tasks.filter(t => t.status === TaskStatuses.New)
     } else
     if (props.filter === 'completed') {
-        tasksForTodolist = props.tasks.filter(t => t.isDone === true)
+        tasksForTodolist = props.tasks.filter(t => t.status === TaskStatuses.Completed)
     }
    
 

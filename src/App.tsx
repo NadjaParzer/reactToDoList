@@ -4,16 +4,9 @@ import { v1 } from "uuid";
 import { AddItemForm } from './AddItemForm';
 import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
-import { TaskType } from './Task';
 import TodoList from './TodoList';
-
-export type FilterValuesType = "all" | "active" | "completed"
-
-export type TodoListsType = {
-    id: string,
-    title: string,
-    filter: FilterValuesType
-}
+import { TaskPriorities, TaskStatuses, TaskType} from './api/todolistsAPI';
+import { FilterValuesType, TodolistDomainType } from './store/todolists-reducer';
 
 export type TaskStateType = {
     [key: string]: Array<TaskType>
@@ -24,34 +17,36 @@ const App = () => {
     let todolistID1 = v1();
     let todolistID2 = v1();
 
-    let [todolists, setTodolists] = useState<Array<TodoListsType>>([
-        { id: todolistID1, title: 'What to learn', filter: 'all' },
-        { id: todolistID2, title: 'What to buy', filter: 'all' },
+    let [todolists, setTodolists] = useState<Array<TodolistDomainType>>([
+        { id: todolistID1, title: 'What to learn', filter: 'all', addedDate: '', order: 0 },
+        { id: todolistID2, title: 'What to buy', filter: 'all', addedDate: '', order: 0  },
     ])
 
-    let [tasks, setTasks] = useState({
+    let [tasks, setTasks] = useState<TaskStateType>({
         [todolistID1]: [
-            { id: v1(), title: "HTML&CSS", isDone: true },
-            { id: v1(), title: "JS", isDone: true },
-            { id: v1(), title: "ReactJS", isDone: false },
-            { id: v1(), title: "Rest API", isDone: false },
-            { id: v1(), title: "GraphQL", isDone: false },
+            { id: v1(), title: "HTML&CSS",status: TaskStatuses.Completed, todoListId: todolistID1, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low },
+            { id: v1(), title: "JS", status: TaskStatuses.Completed, todoListId: todolistID1, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low  },
+            { id: v1(), title: "ReactJS", status: TaskStatuses.New, todoListId: todolistID1, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low  },
+            { id: v1(), title: "Rest API", status: TaskStatuses.New, todoListId: todolistID1, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low  },
+            { id: v1(), title: "GraphQL", status: TaskStatuses.New, todoListId: todolistID1, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low  },
         ],
         [todolistID2]: [
-            { id: v1(), title: "HTML&CSS2", isDone: true },
-            { id: v1(), title: "JS2", isDone: true },
-            { id: v1(), title: "ReactJS2", isDone: false },
-            { id: v1(), title: "Rest API2", isDone: true },
-            { id: v1(), title: "GraphQL2", isDone: false },
+            { id: v1(), title: "HTML&CSS2",status: TaskStatuses.Completed, todoListId: todolistID2, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low  },
+            { id: v1(), title: "JS2", status: TaskStatuses.Completed, todoListId: todolistID2, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low },
+            { id: v1(), title: "ReactJS2",status: TaskStatuses.Completed, todoListId: todolistID2, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low },
+            { id: v1(), title: "Rest API2",status: TaskStatuses.New, todoListId: todolistID2, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low },
+            { id: v1(), title: "GraphQL2",status: TaskStatuses.New, todoListId: todolistID2, description: '', startDate:'', deadline: '', addedDate:'', order: 0, priority: TaskPriorities.Low },
         ]
     });
 
     const addTodoList = (title:string) => {
         const todoListID = v1()
-        const newTodoList: TodoListsType = {
+        const newTodoList: TodolistDomainType = {
             id: todoListID,
             title: title,
-            filter: "all"
+            filter: "all",
+            addedDate: '',
+            order: 0
         }
         setTodolists([...todolists, newTodoList])
         setTasks({...tasks, [todoListID]: []})
@@ -66,14 +61,20 @@ const App = () => {
         const newTask: TaskType = {
             id: v1(),
             title: title,
-            isDone: false
+            status: TaskStatuses.Completed,
+            todoListId: todolistID2, description: '',
+            startDate:'',
+            deadline: '',
+            addedDate:'',
+            order: 0,
+            priority: TaskPriorities.Low
         }
         tasks[todolistsID] = [newTask, ...tasks[todolistsID]]
         setTasks({ ...tasks })
     }
 
-    const changeTaskStatus = (todolistsID: string, taskID: string, isDone: boolean) => {
-        tasks[todolistsID] = tasks[todolistsID].map(t => t.id === taskID ? { ...t, isDone: isDone } : t)
+    const changeTaskStatus = (todolistsID: string, taskID: string, status: TaskStatuses) => {
+        tasks[todolistsID] = tasks[todolistsID].map(t => t.id === taskID ? { ...t, status: status } : t)
         setTasks({ ...tasks })
     }
 
@@ -105,12 +106,12 @@ const App = () => {
         setTasks(copyTask)
     }
 
-    const getTasksForRender = (todoList: TodoListsType): TaskType[] => {
+    const getTasksForRender = (todoList: TodolistDomainType): TaskType[] => {
         switch (todoList.filter) {
             case "completed":
-                return tasks[todoList.id].filter(t => t.isDone)
+                return tasks[todoList.id].filter(t => t.status === TaskStatuses.Completed)
             case "active":
-                return tasks[todoList.id].filter(t => !t.isDone)
+                return tasks[todoList.id].filter(t => t.status === TaskStatuses.New)
             default:
                 return tasks[todoList.id]
         }

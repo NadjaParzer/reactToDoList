@@ -1,22 +1,20 @@
-import { FilterValuesType, TaskStateType } from './../App';
-import { ActionType, RemoveTodoListAC, todolistsReducer, AddTodoListAC, ChangeTodolistTitleAC, ChangeTodolistFilterAC } from './todolists-reducer';
+import { TaskStateType } from './../App';
+import { ActionType, RemoveTodoListAC, todolistsReducer, AddTodoListAC, ChangeTodolistTitleAC, ChangeTodolistFilterAC, TodolistDomainType, FilterValuesType, SetTodolistsAC } from './todolists-reducer';
 import {v1} from 'uuid';
-import {TodoListsType} from '../App';
-import { title } from 'process';
 import { tasksReducer } from './tasks-reducer';
 
 let todolistId1: string
 let todolistId2: string
 
-let startState: Array<TodoListsType> 
+let startState: Array<TodolistDomainType> 
 
 beforeEach( () => {
     todolistId1 = v1();
     todolistId2 = v1();
 
     startState = [
-    { id: todolistId1, title: "What to learn", filter: "all" },
-    { id: todolistId2, title: "What to buy", filter: "all" }
+    { id: todolistId1, title: "What to learn", filter: "all", order: 0, addedDate:'' },
+    { id: todolistId2, title: "What to buy", filter: "all",  order: 0, addedDate:'' }
     ]
 })
 
@@ -57,9 +55,9 @@ test('correct todolist should change its name', () => {
 
    let newFilter: FilterValuesType = "completed";
 
-   const startState: Array<TodoListsType> = [
-       {id: todolistId1, title: "What to learn", filter: "all"},
-       {id: todolistId2, title: "What to buy", filter: "all"}
+   const startState: Array<TodolistDomainType> = [
+       {id: todolistId1, title: "What to learn", filter: "all", order: 0, addedDate:''},
+       {id: todolistId2, title: "What to buy", filter: "all", order: 0, addedDate:''}
    ]
 
    const endState = todolistsReducer(startState, ChangeTodolistFilterAC(todolistId2,newFilter ));
@@ -71,7 +69,7 @@ test('correct todolist should change its name', () => {
 
 test('ids should be equals', () => {
     const startTasksState: TaskStateType = {};
-    const startTodolistsState: Array<TodoListsType> = [];
+    const startTodolistsState: Array<TodolistDomainType> = [];
  
     const action = AddTodoListAC("new todolist");
  
@@ -84,6 +82,15 @@ test('ids should be equals', () => {
  
     expect(idFromTasks).toBe(action.todoListID);
     expect(idFromTodolists).toBe(action.todoListID);
+ });
+
+ test('todolists should be setted', () => {
+ 
+    const action = SetTodolistsAC(startState);
+ 
+    const endState = todolistsReducer([], action)
+ 
+    expect(endState.length).toBe(2);
  });
  
 
