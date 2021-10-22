@@ -5,7 +5,7 @@ import { AddItemForm } from './AddItemForm';
 import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { AddTodoListAC, ChangeTodolistFilterAC, ChangeTodolistTitleAC, RemoveTodoListAC, TodolistDomainType, todolistsReducer } from './store/todolists-reducer';
-import { AddTaskAC, ChangeTaskStatusAC, ChangeTaskTitleAC, RemoveTaskAC, tasksReducer } from './store/tasks-reducer';
+import { AddTaskAC, RemoveTaskAC, tasksReducer, updateTaskAC, updateTaskTC } from './store/tasks-reducer';
 import TodoList from './TodoList';
 import { TaskPriorities, TaskStatuses, TaskType } from './api/todolistsAPI';
 
@@ -56,19 +56,30 @@ const AppWithReducer = () => {
         // }
         // tasks[todolistsID] = [newTask, ...tasks[todolistsID]]
         // setTasks({ ...tasks })
-        dispatchTasks(AddTaskAC(title, todolistsID))
+        dispatchTasks(AddTaskAC({
+         title: title,
+         todoListId: todolistsID,
+         status: TaskStatuses.New,
+         addedDate: '',
+         deadline: '',
+         description: '',
+         order: 0,
+         priority: 0,
+         startDate: '',
+         id: 'zzzz'
+         }))
     }
 
     const changeTaskStatus = (todolistsID: string, taskID: string, status: TaskStatuses) => {
         // tasks[todolistsID] = tasks[todolistsID].map(t => t.id === taskID ? { ...t, isDone: isDone } : t)
         // setTasks({ ...tasks })
-        dispatchTasks(ChangeTaskStatusAC(taskID, status, todolistsID))
+        dispatchTasks(updateTaskAC(taskID, {status}, todolistsID))
     }
 
     const changeTaskTitle = (todolistsID: string, taskID: string, title: string) => {
         // tasks[todolistsID] = tasks[todolistsID].map(t => t.id === taskID ? { ...t, title: title } : t)
         // setTasks({ ...tasks })
-        dispatchTasks(ChangeTaskTitleAC(taskID, title, todolistsID))
+        dispatchTasks(updateTaskAC(taskID, {title}, todolistsID))
     }
 
     //const [filter, setFilter] = useState<FilterValuesType>("all")
@@ -82,7 +93,12 @@ const AppWithReducer = () => {
         // }
         // setTodolists([...todolists, newTodoList])
         // setTasks({...tasks, [todoListID]: []})
-        let action = AddTodoListAC(title)
+        let action = AddTodoListAC({
+            title: title,
+            id: v1(),
+            order: 0,
+            addedDate: ''
+        })
         dispatchTodolists(action)
         dispatchTasks(action)
     }
